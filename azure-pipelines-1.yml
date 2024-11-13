@@ -11,7 +11,7 @@ steps:
     DefaultVersion: true
 - task: PowerPlatformPackSolution@2
   inputs:
-    SolutionSourceFolder: 'ALM-TRAINING'
+    SolutionSourceFolder: '.'
     SolutionOutputFile: 'packed-solution/contoso_university_core.zip'
     SolutionType: 'Both'
 - task: PublishPipelineArtifact@1
