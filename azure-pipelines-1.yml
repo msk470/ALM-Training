@@ -1,21 +1,34 @@
-
 trigger:
 - main
+jobs:
+- job: Pack
+  pool:
+      vmImage: windows-latest
 
-pool:
-  vmImage: windows-latest
-
-steps:
-- task: PowerPlatformToolInstaller@2
-  inputs:
-    DefaultVersion: true
-- task: PowerPlatformPackSolution@2
-  inputs:
-    SolutionSourceFolder: '.'
-    SolutionOutputFile: 'packed-solution/contoso_university_core.zip'
-    SolutionType: 'Both'
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: 'packed-solution'
-    artifact: 'packed-solution'
-    publishLocation: 'pipeline'
+  steps:
+    - task: PowerPlatformToolInstaller@2
+      inputs:
+        DefaultVersion: true
+    - task: PowerPlatformPackSolution@2
+      inputs:
+        SolutionSourceFolder: '.'
+        SolutionOutputFile: 'packed-solution/contoso_university_core.zip'
+        SolutionType: 'Both'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: 'packed-solution'
+        artifact: 'packed-solution'
+        publishLocation: 'pipeline'
+- deployment: Deploy
+  dependsOn: Pack
+  condition: succeeded('Pack')
+  pool:
+    vmImage: 'windows-latest'
+  environment: 'production'
+  strategy:
+    runOnce:
+     deploy:
+      steps:
+      - task: PowerPlatformToolInstaller@2
+        inputs:
+          DefaultVersion: true
